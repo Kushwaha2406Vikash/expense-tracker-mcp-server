@@ -1,0 +1,42 @@
+{
+  "resource": "Expense",
+  "description": "Single expense record owned by a user",
+  
+  "fields": {
+    "expense_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId as string",
+      "read_only": true
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Owner user id derived from API key",
+      "read_only": true
+    },
+    "date": {
+      "type": "string",
+      "format": "YYYY-MM-DD",
+      "required": true
+    },
+    "amount": {
+      "type": "number",
+      "required": true,
+      "min": 0
+    },
+    "category": {
+      "type": "string",
+      "required": true,
+      "examples": ["Food", "Travel", "Rent", "Shopping"]
+    },
+    "subcategory": {
+      "type": "string",
+      "required": false,
+      "default": ""
+    },
+    "note": {
+      "type": "string",
+      "required": false,
+      "default": ""
+    }
+  }
+}

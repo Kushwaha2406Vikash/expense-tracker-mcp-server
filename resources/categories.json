@@ -1,0 +1,231 @@
+{
+  "meta": {
+    "name": "expense_categories",
+    "version": "1.2",
+    "fallback_rule": "If no subcategory matches, use 'other' under the closest category"
+  },
+  "categories": {
+    "food": [
+      "groceries",
+      "fruits_vegetables",
+      "dairy_bakery",
+      "dining_out",
+      "coffee_tea",
+      "snacks",
+      "street_food",
+      "office_meals",
+      "alcohol_tobacco",
+      "tips_service_charges",
+      "delivery_fees",
+      "other"
+    ],
+    "transport": [
+      "fuel",
+      "public_transport",
+      "cab_ride_hailing",
+      "parking",
+      "tolls",
+      "vehicle_service",
+      "vehicle_insurance",
+      "vehicle_wash",
+      "traffic_fines",
+      "other"
+    ],
+    "housing": [
+      "rent",
+      "maintenance_hoa",
+      "property_tax",
+      "repairs_service",
+      "cleaning",
+      "furnishing",
+      "home_insurance",
+      "moving_relocation",
+      "storage",
+      "other"
+    ],
+    "utilities": [
+      "electricity",
+      "water",
+      "gas",
+      "internet_broadband",
+      "mobile_phone",
+      "tv_dth",
+      "other"
+    ],
+    "health": [
+      "medicines",
+      "doctor_consultation",
+      "diagnostics_labs",
+      "insurance_health",
+      "fitness_gym",
+      "mental_health",
+      "emergency_medical",
+      "other"
+    ],
+    "education": [
+      "books",
+      "courses",
+      "online_subscriptions",
+      "exam_fees",
+      "workshops",
+      "certifications",
+      "tuition_fees",
+      "other"
+    ],
+    "family_kids": [
+      "school_fees",
+      "daycare",
+      "toys_games",
+      "clothes",
+      "events_birthdays",
+      "medical_kids",
+      "baby_supplies",
+      "other"
+    ],
+    "entertainment": [
+      "movies_events",
+      "streaming_subscriptions",
+      "games_apps",
+      "outing",
+      "concerts",
+      "hobbies",
+      "other"
+    ],
+    "shopping": [
+      "clothing",
+      "footwear",
+      "accessories",
+      "electronics_gadgets",
+      "appliances",
+      "home_decor",
+      "furniture",
+      "repairs_electronics",
+      "other"
+    ],
+    "subscriptions": [
+      "saas_tools",
+      "cloud_ai",
+      "newsletters",
+      "music_video",
+      "storage_backup",
+      "membership_fees",
+      "other"
+    ],
+    "personal_care": [
+      "salon_spa",
+      "grooming",
+      "cosmetics",
+      "hygiene",
+      "wellness",
+      "therapy_coaching",
+      "other"
+    ],
+    "gifts_donations": [
+      "gifts_personal",
+      "charity_donation",
+      "festivals",
+      "wedding_events",
+      "religious_donations",
+      "other"
+    ],
+    "finance_fees": [
+      "bank_charges",
+      "late_fees",
+      "interest",
+      "brokerage",
+      "currency_exchange",
+      "loan_processing",
+      "other"
+    ],
+    "business": [
+      "software_tools",
+      "hosting_domains",
+      "marketing_ads",
+      "contractor_payments",
+      "travel_business",
+      "office_supplies",
+      "legal_professional_fees",
+      "other"
+    ],
+    "travel": [
+      "flights",
+      "hotels",
+      "train_bus",
+      "visa_passport",
+      "local_transport",
+      "food_travel",
+      "travel_insurance",
+      "luggage_fees",
+      "other"
+    ],
+    "home": [
+      "household_supplies",
+      "cleaning_supplies",
+      "kitchenware",
+      "small_repairs",
+      "pest_control",
+      "security_services",
+      "other"
+    ],
+    "pet": [
+      "food",
+      "vet",
+      "grooming",
+      "supplies",
+      "insurance",
+      "training",
+      "other"
+    ],
+    "taxes": [
+      "income_tax",
+      "gst",
+      "professional_tax",
+      "filing_fees",
+      "penalty",
+      "other"
+    ],
+    "investments": [
+      "mutual_funds",
+      "stocks",
+      "fd_rd",
+      "gold",
+      "crypto",
+      "brokerage_fees",
+      "other"
+    ],
+    "insurance_general": [
+      "life_insurance",
+      "vehicle_insurance",
+      "home_insurance",
+      "travel_insurance",
+      "other"
+    ],
+    "loans_emi": [
+      "home_loan_emi",
+      "car_loan_emi",
+      "personal_loan_emi",
+      "credit_card_payment",
+      "other"
+    ],
+    "government_services": [
+      "documents_fees",
+      "licenses_permits",
+      "fines_penalties",
+      "other"
+    ],
+    "emergency_disaster": [
+      "repairs_emergency",
+      "medical_emergency",
+      "relief_donations",
+      "other"
+    ],
+    "misc": [
+      "uncategorized",
+      "rounding",
+      "cash_adjustment",
+      "refund",
+      "write_off",
+      "other"
+    ]
+  }
+}
