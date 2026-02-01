@@ -1,21 +1,19 @@
-import hashlib 
+import hashlib
 from fastmcp.server.dependencies import get_http_headers
 from db import get_db
-
-
-
 
 def get_user():
     db = get_db()
     users = db["users"]
-    
-    headers = get_http_headers() 
-    
-    token = headers.get("secrete")  
 
+    headers = get_http_headers()
 
-    if not token:
-        raise Exception("API_KEY not found in environment")
+    auth = headers.get("authorization")  
+
+    if not auth or not auth.startswith("Bearer "):
+        raise Exception("Authorization header missing or invalid")
+
+    token = auth.replace("Bearer ", "").strip()
 
     hashed = hashlib.sha256(token.encode()).hexdigest()
 
@@ -27,4 +25,4 @@ def get_user():
     if not user:
         raise Exception("Invalid API Key")
 
-    return user["_id"] 
+    return user["_id"]
