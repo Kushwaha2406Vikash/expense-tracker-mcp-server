@@ -1,6 +1,6 @@
 from fastmcp import FastMCP 
 from auth import get_user
-from db import expense 
+
 from db import get_db
 from bson import ObjectId 
 from prompt import guide 
@@ -13,8 +13,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CATEGORIES_PATH = os.path.join(BASE_DIR, "resources", "categories.json")
 OPERATION_PATH  = os.path.join(BASE_DIR, "resources", "operation.json") 
 
-db = get_db()
-expense = db["expense"]
+
 
 @mcp.prompt() 
 def llmPrompt():
@@ -22,7 +21,8 @@ def llmPrompt():
 
 @mcp.tool()
 def add_expense(date:str,amount:float,category:str,subcategory="",note=""):
-
+    db = get_db()
+    expense = db["expense"]
     user_id = get_user()
     
     if not user_id:
@@ -47,7 +47,8 @@ def add_expense(date:str,amount:float,category:str,subcategory="",note=""):
 
 @mcp.tool()
 def list_expenses(start_date, end_date):
-    
+    db = get_db()
+    expense = db["expense"]
 
     user_id = get_user()
     cursor = expense.find(
@@ -72,7 +73,8 @@ def list_expenses(start_date, end_date):
 # ---------------- SUMMARIZE ----------------
 @mcp.tool()
 def summarize_expense(start_date, end_date, category=None):
-    
+    db = get_db()
+    expense = db["expense"]
     user_id = get_user()
 
     match_stage = {
@@ -107,7 +109,8 @@ def summarize_expense(start_date, end_date, category=None):
 
 @mcp.tool()
 def edit_expense(expense_id,date=None,amount=None,category=None,subcategory=None,note=None):
-    
+    db = get_db()
+    expense = db["expense"] 
     user_id = get_user()
     try:
         expense_obj_id = ObjectId(expense_id)
@@ -149,7 +152,8 @@ def edit_expense(expense_id,date=None,amount=None,category=None,subcategory=None
 
 @mcp.tool()
 def delete_expense(expense_id):
-   
+    db = get_db()
+    expense = db["expense"]
     user_id = get_user()
 
     try:
