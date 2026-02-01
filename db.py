@@ -8,7 +8,7 @@ load_dotenv()
 
 try:
     # Create client (SYNC)
-    client = MongoClient(os.getenv("MONGODBURL"))
+    client = MongoClient(os.getenv("MONGODB_URI"))
 
     # Select DB & collection
     db = client["expense_tracker"]

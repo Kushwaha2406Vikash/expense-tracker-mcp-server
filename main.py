@@ -5,7 +5,7 @@ from bson import ObjectId
 from prompt import guide 
 import os
 
-mcp = FastMCP("Expence Tracker") 
+mcp = FastMCP("ExpenceTracker") 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
