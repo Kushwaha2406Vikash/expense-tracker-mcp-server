@@ -1,12 +1,12 @@
 from fastmcp import FastMCP 
 from auth import get_user
-
+from fastmcp.dependencies import Depends
 from db import get_db
 from bson import ObjectId 
 from prompt import guide 
 import os
 
-mcp = FastMCP("ExpenceTracker",dependencies=[get_user]) 
+mcp = FastMCP("ExpenceTracker") 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,10 +20,10 @@ def llmPrompt():
     return guide() 
 
 @mcp.tool()
-def add_expense(date:str,amount:float,category:str,subcategory="",note=""):
+def add_expense(date:str,amount:float,category:str,subcategory="",note="",user_id:str=Depends(get_user)):
     db = get_db()
     expense = db["expense"]
-    user_id = get_user()
+    # user_id = get_user()
     
     if not user_id:
         raise Exception("User Not found! API Key Invalid")
@@ -46,11 +46,11 @@ def add_expense(date:str,amount:float,category:str,subcategory="",note=""):
 
 
 @mcp.tool()
-def list_expenses(start_date, end_date):
+def list_expenses(start_date, end_date,user_id:str=Depends(get_user)):
     db = get_db()
     expense = db["expense"]
 
-    user_id = get_user()
+    # user_id = get_user()
     cursor = expense.find(
         {
             "user_id": user_id,
@@ -72,10 +72,10 @@ def list_expenses(start_date, end_date):
 
 # ---------------- SUMMARIZE ----------------
 @mcp.tool()
-def summarize_expense(start_date, end_date, category=None):
+def summarize_expense(start_date, end_date, category=None,user_id:str=Depends(get_user),):
     db = get_db()
     expense = db["expense"]
-    user_id = get_user()
+    # user_id = get_user()
 
     match_stage = {
         "user_id": user_id,
@@ -108,10 +108,10 @@ def summarize_expense(start_date, end_date, category=None):
 
 
 @mcp.tool()
-def edit_expense(expense_id,date=None,amount=None,category=None,subcategory=None,note=None):
+def edit_expense(expense_id,date=None,amount=None,category=None,subcategory=None,note=None,user_id:str=Depends(get_user)):
     db = get_db()
     expense = db["expense"] 
-    user_id = get_user()
+   # user_id = get_user()
     try:
         expense_obj_id = ObjectId(expense_id)
     except Exception:
@@ -151,10 +151,10 @@ def edit_expense(expense_id,date=None,amount=None,category=None,subcategory=None
 
 
 @mcp.tool()
-def delete_expense(expense_id):
+def delete_expense(expense_id,user_id:str=Depends(get_user)):
     db = get_db()
     expense = db["expense"]
-    user_id = get_user()
+    # user_id = get_user()
 
     try:
         expense_obj_id = ObjectId(expense_id)

@@ -13,7 +13,7 @@ def get_user():
     if not auth or not auth.startswith("Bearer "):
         raise Exception("Authorization header missing or invalid")
 
-    token = auth.replace("Bearer ", "").strip()
+    token = auth.split(" ", 1)[1].strip()
 
     hashed = hashlib.sha256(token.encode()).hexdigest()
 
