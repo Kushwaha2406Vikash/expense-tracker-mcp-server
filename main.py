@@ -1,6 +1,7 @@
 from fastmcp import FastMCP 
 from auth import get_user
 from db import expense 
+from db import get_db
 from bson import ObjectId 
 from prompt import guide 
 import os
@@ -12,6 +13,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CATEGORIES_PATH = os.path.join(BASE_DIR, "resources", "categories.json")
 OPERATION_PATH  = os.path.join(BASE_DIR, "resources", "operation.json") 
 
+db = get_db()
+expense = db["expense"]
 
 @mcp.prompt() 
 def llmPrompt():

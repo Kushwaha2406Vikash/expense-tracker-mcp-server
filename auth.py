@@ -1,9 +1,14 @@
 import hashlib 
 from fastmcp.server.dependencies import get_http_headers
-from db import users 
+from db import get_db
+
+
 
 
 def get_user():
+    db = get_db()
+    users = db["users"]
+    
     headers = get_http_headers() 
     
     token = headers.get("secrete")  

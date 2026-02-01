@@ -1,19 +1,22 @@
 import os
-from pymongo import MongoClient 
-# from dotenv import load_dotenv 
+from pymongo import MongoClient
 
-# load_dotenv()
+client = None
+db = None
 
 
 
-try:
-    # Create client (SYNC)
-    client = MongoClient(os.getenv("MONGODB_URI"))
+def get_db():
+    global client, db, users, expense
 
-    # Select DB & collection
-    db = client["expense_tracker"]
-    users = db["users"]   
-    expense=db["expense"]
+    if db is not None:
+        return db
 
-except Exception as e:
-    raise Exception(f"The following error occurred: {e}")
+    mongo_uri = os.getenv("MONGODB_URI")
+
+    if not mongo_uri:
+        raise RuntimeError("MONGODB_URI environment variable not set")
+
+    client = MongoClient(mongo_uri)
+
+    return db
