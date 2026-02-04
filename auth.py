@@ -1,14 +1,17 @@
+
 import hashlib
 from fastmcp.server.dependencies import get_http_headers
 from db import get_db
 
-def get_user():
-    db = get_db()
+
+async def get_user():
+    db = await get_db()
     users = db["users"]
 
-    headers = get_http_headers()
+    headers = get_http_headers()  # OK (sync, cheap)
 
-    auth = headers.get("authorization")  
+    auth = headers.get("authorization")
+   # print(auth)
 
     if not auth or not auth.startswith("Bearer "):
         raise Exception("Authorization header missing or invalid")
@@ -17,7 +20,7 @@ def get_user():
 
     hashed = hashlib.sha256(token.encode()).hexdigest()
 
-    user = users.find_one({
+    user = await users.find_one({  # 🔥 CHANGED (await added)
         "api_key_hash": hashed,
         "is_active": True
     })
@@ -25,4 +28,4 @@ def get_user():
     if not user:
         raise Exception("Invalid API Key")
 
-    return user["_id"]
+    return str(user["_id"]) 

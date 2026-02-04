@@ -1,35 +1,46 @@
-from fastmcp import FastMCP 
+
+from fastmcp import FastMCP
 from auth import get_user
 from fastmcp.dependencies import Depends
 from db import get_db
-from bson import ObjectId 
-from prompt import guide 
+from bson import ObjectId
+from prompt import guide
 import os
+import json
+import asyncio  
 
-mcp = FastMCP("ExpenceTracker") 
+mcp = FastMCP("ExpenceTracker")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 CATEGORIES_PATH = os.path.join(BASE_DIR, "resources", "categories.json")
-OPERATION_PATH  = os.path.join(BASE_DIR, "resources", "operation.json") 
+OPERATION_PATH = os.path.join(BASE_DIR, "resources", "operation.json")
 
 
-
-@mcp.prompt() 
+@mcp.prompt()
 def llmPrompt():
-    return guide() 
+    return guide()
 
+
+# =========================
+# ADD EXPENSE
+# =========================
 @mcp.tool()
-def add_expense(date:str,amount:float,category:str,subcategory="",note="",user_id:str=Depends(get_user)):
-    db = get_db()
+async def add_expense(
+    date: str,
+    amount: float,
+    category: str,
+    subcategory="",
+    note="",
+    user_id: str = Depends(get_user)
+):
+    db = await get_db()
     expense = db["expense"]
-    # user_id = get_user()
-    
+
     if not user_id:
         raise Exception("User Not found! API Key Invalid")
 
-    
-    result = expense.insert_one({
+    await expense.insert_one({  # 🔥 CHANGED (await)
         "user_id": user_id,
         "date": date,
         "amount": float(amount),
@@ -40,17 +51,18 @@ def add_expense(date:str,amount:float,category:str,subcategory="",note="",user_i
 
     return {
         "status": "ok",
-        "message": "Item add Successfully",
-        
+        "message": "Item added successfully"
     }
 
 
+# =========================
+# LIST EXPENSES
+# =========================
 @mcp.tool()
-def list_expenses(start_date, end_date,user_id:str=Depends(get_user)):
-    db = get_db()
+async def list_expenses(start_date:str, end_date:str, user_id: str = Depends(get_user)):
+    db = await get_db()
     expense = db["expense"]
 
-    # user_id = get_user()
     cursor = expense.find(
         {
             "user_id": user_id,
@@ -58,24 +70,33 @@ def list_expenses(start_date, end_date,user_id:str=Depends(get_user)):
         }
     ).sort("date", -1)
 
+    documents = await cursor.to_list(length=None)  
+
     return [
         {
-            "expense_id": str(d["_id"]),   
+            "expense_id": str(d["_id"]),
             "date": d["date"],
             "amount": d["amount"],
             "category": d["category"],
             "subcategory": d.get("subcategory", ""),
             "note": d.get("note", "")
         }
-        for d in cursor
+        for d in documents  # 🔥 CHANGED (cursor → documents)
     ]
 
-# ---------------- SUMMARIZE ----------------
+
+# =========================
+# SUMMARIZE EXPENSE
+# =========================
 @mcp.tool()
-def summarize_expense(start_date, end_date, category=None,user_id:str=Depends(get_user),):
-    db = get_db()
+async def summarize_expense(
+    start_date:str,
+    end_date:str,
+    category=None,
+    user_id: str = Depends(get_user),
+):
+    db = await get_db()
     expense = db["expense"]
-    # user_id = get_user()
 
     match_stage = {
         "user_id": user_id,
@@ -96,22 +117,34 @@ def summarize_expense(start_date, end_date, category=None,user_id:str=Depends(ge
         {"$sort": {"_id": 1}}
     ]
 
-    result = expense.aggregate(pipeline)
+    cursor = expense.aggregate(pipeline)
+    results = await cursor.to_list(length=None)  
 
     return [
         {
             "category": doc["_id"],
             "total_amount": doc["total_amount"]
         }
-        for doc in result
+        for doc in results
     ]
 
 
+# =========================
+# EDIT EXPENSE
+# =========================
 @mcp.tool()
-def edit_expense(expense_id,date=None,amount=None,category=None,subcategory=None,note=None,user_id:str=Depends(get_user)):
-    db = get_db()
-    expense = db["expense"] 
-   # user_id = get_user()
+async def edit_expense(
+    expense_id,
+    date=None,
+    amount=None,
+    category=None,
+    subcategory=None,
+    note=None,
+    user_id: str = Depends(get_user)
+):
+    db = await get_db()
+    expense = db["expense"]
+
     try:
         expense_obj_id = ObjectId(expense_id)
     except Exception:
@@ -133,10 +166,10 @@ def edit_expense(expense_id,date=None,amount=None,category=None,subcategory=None
     if not update_fields:
         return {"error": "No fields provided to update"}
 
-    result = expense.update_one(
+    result = await expense.update_one(  
         {
             "_id": expense_obj_id,
-            "user_id": user_id   
+            "user_id": user_id
         },
         {"$set": update_fields}
     )
@@ -146,78 +179,76 @@ def edit_expense(expense_id,date=None,amount=None,category=None,subcategory=None
 
     return {
         "status": "updated",
-        "message": "Item Update Successfully"
+        "message": "Item updated successfully"
     }
 
 
+# =========================
+# DELETE EXPENSE
+# =========================
 @mcp.tool()
-def delete_expense(expense_id,user_id:str=Depends(get_user)):
-    db = get_db()
+async def delete_expense(expense_id, user_id: str = Depends(get_user)):
+    db = await get_db()
     expense = db["expense"]
-    # user_id = get_user()
 
     try:
         expense_obj_id = ObjectId(expense_id)
     except Exception:
         return {"error": "Invalid expense_id format"}
 
-    result = expense.delete_one(
-        {
-            "_id": expense_obj_id,
-            "user_id": user_id   
-        }
-    )
+    result = await expense.delete_one({  # 🔥 CHANGED
+        "_id": expense_obj_id,
+        "user_id": user_id
+    })
 
     if result.deleted_count == 0:
         return {"error": "Expense not found or not authorized"}
 
     return {
-        "status": "Success",
-        "message": "Item Deleted Successfully"
+        "status": "success",
+        "message": "Item deleted successfully"
     }
 
 
-
+# =========================
+# RESOURCES (NON-BLOCKING FILE IO)
+# =========================
 @mcp.resource("expense:///categories", mime_type="application/json")
-def get_categories_data():
+async def get_categories_data():
+    default_categories = {
+        "categories": [
+            "Food & Dining",
+            "Transportation",
+            "Shopping",
+            "Entertainment",
+            "Bills & Utilities",
+            "Healthcare",
+            "Travel",
+            "Education",
+            "Business",
+            "Other"
+        ]
+    }
 
     try:
-        # Provide default categories if file doesn't exist
-        default_categories = {
-            "categories": [
-                "Food & Dining",
-                "Transportation",
-                "Shopping",
-                "Entertainment",
-                "Bills & Utilities",
-                "Healthcare",
-                "Travel",
-                "Education",
-                "Business",
-                "Other"
-            ]
-        }
-        
-        try:
-            with open(CATEGORIES_PATH, "r", encoding="utf-8") as f:
-                return f.read()
-        except FileNotFoundError:
-            import json
-            return json.dumps(default_categories, indent=2)
+        return await asyncio.to_thread(  
+            lambda: open(CATEGORIES_PATH, "r", encoding="utf-8").read()
+        )
+    except FileNotFoundError:
+        return json.dumps(default_categories, indent=2)
     except Exception as e:
-        return f'{{"error": "Could not load categories: {str(e)}"}}'
-    
+        return json.dumps({"error": str(e)})
+
 
 @mcp.resource("expense:///expense_operation", mime_type="application/json")
-def expense_operation():
+async def expense_operation():
     try:
-        with open(OPERATION_PATH, "r", encoding="utf-8") as f:
-            return f.read()
-    
+        return await asyncio.to_thread(  
+            lambda: open(OPERATION_PATH, "r", encoding="utf-8").read()
+        )
     except Exception as e:
-        return f'{{"error": "Could not load categories: {str(e)}"}}'      
+        return json.dumps({"error": str(e)})
 
 
 if __name__ == "__main__":
     mcp.run(transport="http", host="0.0.0.0", port=8000)
-
